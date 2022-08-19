@@ -12,6 +12,8 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     private var deletingStartIndex = -1
     private var deleteSelectionMode = true
     private var oldPhone = ""
+    private var isAddingMiddle = false
+    private var addingStartingIndex = -1
     override fun beforeTextChanged(s:CharSequence?, start:Int, count:Int, after:Int) {
         s?.let{
             isDeleteMode = after < count
@@ -24,20 +26,43 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         //TODO: cursor setleme
         if(!isUserInput){
-            editTextRef.text?.let {
+            editTextRef.text?.let { it ->
                 if (!isDeleteMode && deletingStartIndex != -1) {
                     if(deleteSelectionMode){
                         editTextRef.setSelection(deletingStartIndex-1)
                         deleteSelectionMode = false
                     }else{
-                        editTextRef.setSelection(deletingStartIndex)
+                        if(s?.count { it.isDigit() }==1){
+                            editTextRef.setSelection(2)
+                        }else{
+                            editTextRef.setSelection(deletingStartIndex)
+                        }
                     }
                 } else {
                     when (val position = it.indexOf("_")) {
                         -1 -> editTextRef.setSelection(it.length)
-                        else -> editTextRef.setSelection(position)
+                        else -> {
+                            if(!isAddingMiddle)
+                            editTextRef.setSelection(position)
+                            else{
+                                if (addingStartingIndex != -1)
+                                    s?.subSequence(addingStartingIndex,s.length)
+                                        ?.let { it1 ->
+                                            val index = it1.indexOfFirst { it.isDigit() }
+                                            editTextRef.setSelection(addingStartingIndex+index+1) }
+                                isAddingMiddle = false
+                                addingStartingIndex = -1
+                            }
+                        }
                     }
                 }
+            }
+        }
+        s?.let { text ->
+            if(start!=text.length){
+                val sub = text.subSequence(start+1,text.length)
+                isAddingMiddle = start!=text.length && sub.indexOfLast { it.isDigit()} != -1
+                addingStartingIndex = start
             }
         }
         if(isDeleteMode)
