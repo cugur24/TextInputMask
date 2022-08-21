@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 
 class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
+
     private val phoneInputMask = "(5__) ___ __ __"
     private var isUserInput = true
     private var isDeletingBlank = false
@@ -14,6 +15,7 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     private var oldPhone = ""
     private var isAddingMiddle = false
     private var addingStartingIndex = -1
+
     override fun beforeTextChanged(s:CharSequence?, start:Int, count:Int, after:Int) {
         s?.let{
             isDeleteMode = after < count
@@ -24,7 +26,6 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        //TODO: cursor setleme
         if(!isUserInput){
             editTextRef.text?.let { it ->
                 if (!isDeleteMode && deletingStartIndex != -1) {
@@ -70,13 +71,12 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     }
 
     override fun afterTextChanged(s: Editable?) {
-        //Yeni text olusturma
         if(isUserInput) {
             isUserInput = false
             if(isDeletingBlank){
-                editTextRef.setText(generatePhoneInputMaskNew(deletingStartIndex,isDeleteMode,isDeletingBlank,editTextRef.text.toString()))
+                editTextRef.setText(generatePhoneInputMaskNew(deletingStartIndex,isDeleteMode,editTextRef.text.toString()))
             }
-            else editTextRef.setText(generatePhoneInputMaskNew(-1,isDeleteMode,isDeletingBlank,editTextRef.text.toString()))
+            else editTextRef.setText(generatePhoneInputMaskNew(-1,isDeleteMode,editTextRef.text.toString()))
         }
         else{
             isUserInput = true
@@ -86,10 +86,9 @@ class CuutyGenerator(private val editTextRef:EditText):TextWatcher {
     }
 
 
-    private fun generatePhoneInputMaskNew(start: Int=-1,isDeleteMode:Boolean, isDeletingBlank:Boolean, phone:String):String{
+    private fun generatePhoneInputMaskNew(start: Int=-1, isDeletingBlank:Boolean, phone:String):String{
         if (cleanPhone(phone).length>10)return oldPhone
         val cleanPhone = if(isDeletingBlank && start!= -1){
-            //TODO: duzelt
             val seq = phone.subSequence(0 until start)
             val index = seq.indexOfLast { it.isDigit() }
             val deletedBlankDigit = if(phone[index-1].isDigit())
