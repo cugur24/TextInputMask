@@ -1,8 +1,6 @@
-plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'maven-publish'
-}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     compileSdk 32
@@ -52,8 +50,8 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = 'com.github.philipplackner'
-                artifactId = 'image-preview-compose'
+                groupId = 'com.github.cugur24'
+                artifactId = 'text-input-mask'
                 version = '1.0'
             }
         }
